@@ -1,0 +1,6 @@
+@ÖvningMinimalAPIOchEF_HostAddress = http://localhost:5053
+
+GET {{ÖvningMinimalAPIOchEF_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
