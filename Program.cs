@@ -1,7 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ÖvningMinimalAPIOchEF.Data;
 using ÖvningMinimalAPIOchEF.Models;
+using Scalar.AspNetCore;
 
 namespace ÖvningMinimalAPIOchEF
 {
@@ -28,6 +30,7 @@ namespace ÖvningMinimalAPIOchEF
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
@@ -64,7 +67,21 @@ namespace ÖvningMinimalAPIOchEF
                     return null;
                 }
 
-                customer = updatedCustomer;
+                if (!String.IsNullOrEmpty(updatedCustomer.Name))
+                {
+                    customer.Name = updatedCustomer.Name;
+                }
+
+                if (!String.IsNullOrEmpty(updatedCustomer.Email))
+                {
+                    customer.Email = updatedCustomer.Email;
+                }
+
+                if (!String.IsNullOrEmpty(updatedCustomer.PhoneNr))
+                {
+                    customer.PhoneNr = updatedCustomer.PhoneNr;
+                }
+
                 context.SaveChanges();
 
                 return customer;
@@ -105,16 +122,31 @@ namespace ÖvningMinimalAPIOchEF
                 return service;
             });
 
-            // Uppdatera information om en tjänst.
+            // Uppdatera information om en tjänst. Price kan inte vara noll. 
             app.MapPut("/services/{id}", (int id, Service updatedService, CompanyAPIDbContext context) =>
             {
                 var service = context.Services.FirstOrDefault(s => s.Id == id);
+
                 if(service == null)
                 {
                     return null;
                 }
 
-                service = updatedService;
+                if (!String.IsNullOrEmpty(updatedService.Name))
+                {
+                    service.Name = updatedService.Name;
+                }
+
+                if (!String.IsNullOrEmpty(updatedService.Description))
+                {
+                    service.Description = updatedService.Description;
+                }
+
+                if (updatedService.Price != 0)
+                {
+                    service.Price = updatedService.Price;
+                }
+
                 context.SaveChanges();
 
                 return service;
