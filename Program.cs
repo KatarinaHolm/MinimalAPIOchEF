@@ -44,7 +44,7 @@ namespace ÖvningMinimalAPIOchEF
             // Lägga till nya kunder.
             app.MapPost("/customers", (Customer customer, CompanyAPIDbContext context) =>
             {
-                if (customer is null)
+                if (customer == null)
                 {
                     return Results.BadRequest("Customer data saknas.");
                 }
@@ -67,7 +67,7 @@ namespace ÖvningMinimalAPIOchEF
                 customer = updatedCustomer;
                 context.SaveChanges();
 
-                return updatedCustomer;
+                return customer;
             });
 
             // Ta bort en kund.
@@ -88,16 +88,51 @@ namespace ÖvningMinimalAPIOchEF
 
 
             // Se en lista över alla tjänster.
+            app.MapGet("/services", (CompanyAPIDbContext context) =>
+            {
+                var services = context.Services.ToList();
+
+                return services;
+            });
 
 
             // Lägga till nya tjänster.
+            app.MapPost("/services", (Service service, CompanyAPIDbContext context) =>
+            {
+                context.Services.Add(service);
+                context.SaveChanges();
 
+                return service;
+            });
 
             // Uppdatera information om en tjänst.
+            app.MapPut("/services/{id}", (int id, Service updatedService, CompanyAPIDbContext context) =>
+            {
+                var service = context.Services.FirstOrDefault(s => s.Id == id);
+                if(service == null)
+                {
+                    return null;
+                }
 
+                service = updatedService;
+                context.SaveChanges();
+
+                return service;
+            });
 
             // Ta bort en tjänst.
+            app.MapDelete("/services{id}", (int id, CompanyAPIDbContext context) =>
+            {
+                var service = context.Services.FirstOrDefault(s => s.Id == id);
+                if(service == null)
+                {
+                    return null;
+                }
 
+                context.Services.Remove(service);
+                context.SaveChanges();
+                return "Service removed";
+            });
 
             app.Run();
         }
